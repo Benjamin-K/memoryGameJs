@@ -55,6 +55,14 @@ class Square {
     if (this.value === partner.value) return (this._partner = partner);
   }
 
+  get element() {
+    return this._element;
+  }
+
+  set element(element) {
+    return (this._element = element);
+  }
+
   get isActive() {
     return this._isActive;
   }
@@ -82,6 +90,8 @@ class Square {
       this.color = this.getMatchedColor();
       this.partner._isMatched = true;
       this.partner.color = this.getMatchedColor();
+      this._element.classList.add('done');
+      this.partner._element.classList.add('done');
 
       return true;
     } else {

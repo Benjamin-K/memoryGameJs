@@ -1,18 +1,8 @@
 class Game {
    constructor(username, difficulty) {
-      this._makeAvailableValues = (from, to) => {
-         const valuesTab = [];
-         const toCodeValue = to.charCodeAt();
-         let currentCodeValue = from.charCodeAt();
+      this._makeAvailableValues = () => imgUrls;
 
-         for (currentCodeValue; currentCodeValue <= toCodeValue; currentCodeValue++) {
-            valuesTab.push(currentCodeValue);
-         }
-
-         return [...String.fromCharCode(...valuesTab)];
-      };
-
-      const _availableValues = this._makeAvailableValues("A", "Z");
+      const _availableValues = this._makeAvailableValues();
 
       this.getAvailableValues = () => _availableValues;
 
@@ -21,6 +11,12 @@ class Game {
       this._numberOfMatchedSqueres = 0;
       this._squares = [];
       this._gameState = "inactive";
+
+      // Preload img urls
+      imgUrls.forEach(imgUrl => {
+         const img = new Image();
+         img.src = imgUrl;
+      });
    }
 
    get stats() {
@@ -67,15 +63,17 @@ class Game {
    }
 
    _generateNumberOfSquares(difficulty) {
-      if (difficulty === "easy") return (this.numberOfSquares = 24);
+      const numberOfAllSquares = this.getAvailableValues().length;
 
-      if (difficulty === "normal") return (this.numberOfSquares = 36);
+      if (difficulty === "easy") return (this.numberOfSquares = Math.round(numberOfAllSquares / 2));
 
-      if (difficulty === "hard") return (this.numberOfSquares = 48);
+      if (difficulty === "normal") return (this.numberOfSquares = Math.round(numberOfAllSquares / 4 * 3));
+
+      if (difficulty === "hard") return (this.numberOfSquares = numberOfAllSquares);
 
       this.stats.difficulty = "normal";
 
-      return (this.numberOfSquares = 36);
+      return (this.numberOfSquares = numberOfAllSquares / 4 * 3);
    }
 
    _getRandomValue(values) {
@@ -106,8 +104,10 @@ class Game {
    }
 
    _getRandom(available) {
-      if (!available.length || !(available instanceof Array))
+      console.log(available, typeof available);
+      if (!available.length || !(available instanceof Array)) {
          throw new Error("wrong type of available");
+      }
 
       return available[Math.floor(Math.random() * available.length)];
    }
@@ -210,9 +210,9 @@ class Game {
 
             if (prev.active === null || prev.state === false) {
                prev.active = e.target;
+               prev.active.classList.add('active');
                prev.activeSquare = this.getSquare(prev.active.dataset.order);
                prev.activeSquare.changeActivity();
-               prev.active.textContent = prev.activeSquare.value;
                prev.active.style.backgroundColor = prev.activeSquare.color;
                prev.state = true;
 
@@ -220,12 +220,12 @@ class Game {
             }
 
             const active = e.target;
+            active.classList.add('active');
+
             const activeSquare = this.getSquare(active.dataset.order);
 
-            active.textContent = activeSquare.value;
-
             if (activeSquare.makeMatching(prev.activeSquare)) {
-               this.makeMatch()
+               this.makeMatch();
                active.style.backgroundColor = activeSquare.getMatchedColor();
                prev.active.style.backgroundColor = prev.activeSquare.getMatchedColor();
             } else {
@@ -238,10 +238,10 @@ class Game {
                setTimeout(() => {
                   active.style.backgroundColor = activeSquare.getPassiveColor();
                   prev.active.style.backgroundColor = activeSquare.getPassiveColor();
-                  prev.active.textContent = "";
-                  active.textContent = "";
+                  prev.active.classList.remove('active');
+                  active.classList.remove('active');
                   this.gameState = 'ongoing';
-               }, 500)
+               }, 1000)
             }
 
             if (this.gameState === 'ongoing') {

@@ -26,7 +26,10 @@ class Grid {
     elem.dataset.isActive = square.isActive.toString();
     elem.dataset.isMatched = square.isMatched.toString();
     elem.style.backgroundColor = square.color;
+    elem.style.backgroundImage = `url(${square.value})`;
     // elem.textContent = square.value;
+
+    square.element = elem;
 
     wrapper.appendChild(elem);
   }

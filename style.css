@@ -97,6 +97,11 @@ body {
   text-align: center;
   line-height: calc(1300px / 7);
   cursor: pointer;
+  background-position: center center;
+  background-size: cover;
+}
+.game-square:not(.done):not(.active) {
+  background-image: none !important;
 }
 
 .easy .game-square {
